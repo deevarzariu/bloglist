@@ -9,6 +9,7 @@ const { MONGODB_URI } = require("./utils/config");
 
 const blogRouter = require("./controllers/blog");
 const userRouter = require("./controllers/user");
+const loginRouter = require("./controllers/login");
 
 mongoose.connect(MONGODB_URI);
 
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", userRouter);
+app.use("/api/login", loginRouter);
 app.use(middleware.errorHandler);
 
 module.exports = app;
