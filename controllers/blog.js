@@ -2,23 +2,19 @@ const jwt = require("jsonwebtoken");
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const middleware = require("../utils/middleware");
 
 blogRouter.get("/", async (req, res) => {
   const blogs = await Blog.find({}).populate("user", { name: 1, username: 1 });
   res.json(blogs);
 });
 
-blogRouter.post("/", async (req, res) => {
+blogRouter.post("/", middleware.userExtractor, async (req, res) => {
   if (!req.body.title || !req.body.url) {
     return res.status(400).json("Missing title or url");
   }
 
-  const decodedToken = jwt.verify(req.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return res.status(401).json({ error: "invalid token" });
-  }
-
-  const user = await User.findById(decodedToken.id);
+  const user = req.user;
 
   const blog = new Blog(req.body);
 
@@ -36,7 +32,20 @@ blogRouter.post("/", async (req, res) => {
   res.status(201).json(result);
 });
 
-blogRouter.delete("/:id", async (req, res) => {
+blogRouter.delete("/:id", middleware.userExtractor, async (req, res) => {
+  const user = req.user;
+  const blogPost = await Blog.findById(req.params.id);
+
+  if (blogPost.user.toString() !== user._id.toString()) {
+    return res.status(401).json({ error: "invalid token" });
+  }
+
+  const dbUser = await User.findById(user._id);
+  dbUser.blogs = dbUser.blogs.filter(
+    (blogPost) => blogPost._id.toString() !== req.params.id
+  );
+  await dbUser.save();
+
   await Blog.findByIdAndDelete(req.params.id);
   res.status(204).end();
 });
