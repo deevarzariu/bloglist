@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
@@ -12,6 +13,13 @@ blogRouter.post("/", async (req, res) => {
     return res.status(400).json("Missing title or url");
   }
 
+  const decodedToken = jwt.verify(req.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: "invalid token" });
+  }
+
+  const user = await User.findById(decodedToken.id);
+
   const blog = new Blog(req.body);
 
   if (!blog.likes) blog.likes = 0;
@@ -21,7 +29,6 @@ blogRouter.post("/", async (req, res) => {
     blog.user = user._id;
   }
 
-  const user = await User.findOne(blog.user);
   const result = await blog.save();
   user.blogs = [...user.blogs, result._id];
   user.save();
