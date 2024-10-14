@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
@@ -14,20 +13,14 @@ blogRouter.post("/", middleware.userExtractor, async (req, res) => {
     return res.status(400).json("Missing title or url");
   }
 
-  const user = req.user;
-
   const blog = new Blog(req.body);
-
+  blog.user = req.user;
   if (!blog.likes) blog.likes = 0;
-
-  if (!blog.user) {
-    const user = await User.findOne({});
-    blog.user = user._id;
-  }
-
   const result = await blog.save();
+
+  const user = await User.findById(req.user._id);
   user.blogs = [...user.blogs, result._id];
-  user.save();
+  await user.save();
 
   res.status(201).json(result);
 });

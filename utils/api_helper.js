@@ -16,11 +16,12 @@ const initialBlogs = [
   },
 ];
 
+const initialPassword = "1234";
+
 const initialUsers = [
   {
     name: "default-user",
     username: "root",
-    passwordHash: "toor-resu-tluafed",
   },
 ];
 
@@ -34,4 +35,10 @@ const getAllUsers = async () => {
   return users.map((user) => user.toJSON());
 };
 
-module.exports = { initialBlogs, initialUsers, getAllBlogs, getAllUsers };
+module.exports = {
+  initialBlogs,
+  initialPassword,
+  initialUsers,
+  getAllBlogs,
+  getAllUsers,
+};

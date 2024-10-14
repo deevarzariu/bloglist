@@ -6,6 +6,7 @@ const supertest = require("supertest");
 const app = require("../app");
 const User = require("../models/user");
 const helper = require("../utils/api_helper");
+const bcryptjs = require("bcryptjs");
 
 const api = supertest(app);
 
@@ -13,12 +14,13 @@ beforeEach(async () => {
   await User.deleteMany({});
 
   for (let user of helper.initialUsers) {
-    const userObj = new User(user);
+    const passwordHash = await bcryptjs.hash("1234", 10);
+    const userObj = new User({ ...user, passwordHash });
     await userObj.save();
   }
 });
 
-describe("users API", () => {
+describe.only("users API", () => {
   test("successfully creates a user with valid username and password", async () => {
     const userToCreate = {
       username: "new-user",
