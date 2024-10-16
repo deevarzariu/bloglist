@@ -13,16 +13,20 @@ blogRouter.post("/", middleware.userExtractor, async (req, res) => {
     return res.status(400).json("Missing title or url");
   }
 
-  const blog = new Blog(req.body);
-  blog.user = req.user;
-  if (!blog.likes) blog.likes = 0;
-  const result = await blog.save();
+  try {
+    const blog = new Blog(req.body);
+    blog.user = req.user;
+    if (!blog.likes) blog.likes = 0;
+    const result = await blog.save();
 
-  const user = await User.findById(req.user._id);
-  user.blogs = [...user.blogs, result._id];
-  await user.save();
+    const user = await User.findById(req.user._id);
+    user.blogs = [...user.blogs, result._id];
+    await user.save();
 
-  res.status(201).json(result);
+    res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json("Unknown error");
+  }
 });
 
 blogRouter.delete("/:id", middleware.userExtractor, async (req, res) => {

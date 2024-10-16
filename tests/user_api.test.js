@@ -1,4 +1,4 @@
-const { test, after, beforeEach, describe } = require("node:test");
+const { test, after, before, beforeEach, describe } = require("node:test");
 const assert = require("node:assert");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
@@ -20,7 +20,7 @@ beforeEach(async () => {
   }
 });
 
-describe.only("users API", () => {
+describe("users API", () => {
   test("successfully creates a user with valid username and password", async () => {
     const userToCreate = {
       username: "new-user",

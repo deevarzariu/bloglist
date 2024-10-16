@@ -23,7 +23,18 @@ const initialUsers = [
     name: "default-user",
     username: "root",
   },
+  {
+    name: "anonymous",
+    username: "anon",
+  },
 ];
+
+const dummyBlogContent = {
+  title: "Dummy Title #3",
+  author: "Dummy Author #3",
+  url: "www.fake-url-3.com",
+  likes: 3,
+};
 
 const getAllBlogs = async () => {
   const blogs = await Blog.find({});
@@ -36,6 +47,7 @@ const getAllUsers = async () => {
 };
 
 module.exports = {
+  dummyBlogContent,
   initialBlogs,
   initialPassword,
   initialUsers,
