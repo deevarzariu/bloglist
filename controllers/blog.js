@@ -10,7 +10,7 @@ blogRouter.get("/", async (req, res) => {
 
 blogRouter.post("/", middleware.userExtractor, async (req, res) => {
   if (!req.body.title || !req.body.url) {
-    return res.status(400).json("Missing title or url");
+    return res.status(400).json({ error: "Missing title or url" });
   }
 
   try {
@@ -25,7 +25,7 @@ blogRouter.post("/", middleware.userExtractor, async (req, res) => {
 
     res.status(201).json(result);
   } catch (err) {
-    return res.status(400).json("Unknown error");
+    return res.status(400).json({ error: "Unknown error" });
   }
 });
 
