@@ -25,6 +25,7 @@ blogRouter.post("/", middleware.userExtractor, async (req, res) => {
 
     res.status(201).json(result);
   } catch (err) {
+    console.log("error", err);
     return res.status(400).json({ error: "Unknown error" });
   }
 });
@@ -50,7 +51,7 @@ blogRouter.delete("/:id", middleware.userExtractor, async (req, res) => {
 blogRouter.put("/:id", async (req, res) => {
   const result = await Blog.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-  });
+  }).populate("user", { username: 1, name: 1 });
   res.status(201).json(result);
 });
 
